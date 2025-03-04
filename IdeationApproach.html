@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ideation Approach Selector: iLab vs Ideation Sprint</title>
+    <style>
+        :root {
+            --ilab-color: #4a6fa5;
+            --sprint-color: #e07a5f;
+            --background: #f4f7f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .score-card {
+            text-align: center;
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            flex: 1;
+            margin: 0 10px;
+            position: relative;
+        }
+
+        .ilab-score {
+            background-color: rgba(74, 111, 165, 0.1);
+            border: 2px solid var(--ilab-color);
+        }
+
+        .sprint-score {
+            background-color: rgba(224, 122, 95, 0.1);
+            border: 2px solid var(--sprint-color);
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .score-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .ilab-title {
+            color: var(--ilab-color);
+        }
+
+        .sprint-title {
+            color: var(--sprint-color);
+        }
+
+        .question-section {
+            margin-bottom: 30px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+        }
+
+        h2 {
+            color: #444;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-card {
+            cursor: pointer;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+            border: 2px solid #ddd;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .ilab-option {
+            border-color: var(--ilab-color);
+        }
+
+        .sprint-option {
+            border-color: var(--sprint-color);
+        }
+
+        .option-tag {
+            position: absolute;
+            right: 0;
+            top: 0;
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: white;
+            border-bottom-left-radius: 8px;
+        }
+
+        .ilab-tag {
+            background-color: var(--ilab-color);
+        }
+
+        .sprint-tag {
+            background-color: var(--sprint-color);
+        }
+
+        .result-section {
+            text-align: center;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-top: 30px;
+            display: none;
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .result-description {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .reset-btn {
+            background-color: #6c63ff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+        }
+
+        .reset-btn:hover {
+            background-color: #5a52d5;
+            transform: translateY(-2px);
+        }
+
+        .selected {
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+
+        .sprint-selected {
+            background-color: rgba(224, 122, 95, 0.1);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--ilab-color), var(--sprint-color));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .recommendation-highlight {
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin: 0 5px;
+        }
+
+        .ilab-highlight {
+            background-color: rgba(74, 111, 165, 0.2);
+            color: var(--ilab-color);
+        }
+
+        .sprint-highlight {
+            background-color: rgba(224, 122, 95, 0.2);
+            color: var(--sprint-color);
+        }
+
+        @media (max-width: 768px) {
+            .option-card {
+                padding: 12px 15px;
+            }
+            
+            .option-tag {
+                font-size: 0.6rem;
+                padding: 3px 6px;
+            }
+            
+            .score-value {
+                font-size: 2rem;
+            }
+        }
+
+        .winner-badge {
+            display: none;
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4caf50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ideation Approach Selector</h1>
+            <p class="subtitle">Answer the questions below to determine whether an iLab or Ideation Sprint approach is better for your situation</p>
+        </header>
+
+        <div class="score-display">
+            <div class="score-card ilab-score">
+                <div class="winner-badge" id="ilab-winner">RECOMMENDED</div>
+                <p class="score-title ilab-title">iLab</p>
+                <p class="score-value" id="ilab-score">0</p>
+                <p>Immersive, comprehensive workshop</p>
+            </div>
+            <div class="score-card sprint-score">
+                <div class="winner-badge" id="sprint-winner">RECOMMENDED</div>
+                <p class="score-title sprint-title">Ideation Sprint</p>
+                <p class="score-value" id="sprint-score">0</p>
+                <p>Quick, focused session</p>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress" id="progress-bar"></div>
+        </div>
+
+        <div id="question-container">
+            <!-- Question 1 -->
+            <div class="question-section" id="q1">
+                <h2>1. Team Size</h2>
+                <div class="options-container">
+                    <div class="option-card" data-type="ilab" onclick="selectOption(this)">
+                        <span>We have 25-30 people available</span>
+                        <span class="option-tag ilab-tag">iLab</span>
+                    </div>
+                    <div class="option-card" data-type="sprint" onclick="selectOption(this)">
+                        <span>We have only 8-10 people available</span>
+                        <span class="option-tag sprint-tag">Sprint</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Question 2 -->
+            <div class="question-section" id="q1">
+                <h2>2. Participant Availability</h2>
+                <div class="options-container">
+                    <div class="option-card" data-type="ilab" onclick="selectOption(this)">
+                        <span>We want external participants for a broader perspective</span>
+                        <span class="option-tag ilab-tag">iLab</span>
+                    </div>
+                    <div class="option-card" data-type="sprint" onclick="selectOption(this)">
+                        <span>We prefer a more focused, internal session</span>
+                        <span class="option-tag sprint-tag">Sprint</span>
+                    </div>
+                </div>
+            </div>            
+
+            <!-- Question 3 -->
+            <div class="question-section" id="q2">
+                <h2>3. Time & Scheduling Constraints</h2>
+                <div class="options-container">
+                    <div class="option-card" data-type="ilab" onclick="selectOption(this)">
+                        <span>We can dedicate 2 full days to ideation</span>
+                        <span class="option-tag ilab-tag">iLab</span>
+                    </div>
+                    <div class="option-card" data-type="sprint" onclick="selectOption(this)">
+                        <span>We need to generate ideas in a few hours</span>
+                        <span class="option-tag sprint-tag">Sprint</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="question-section" id="q3">
+                <h2>4. Depth of Preparation</h2>
+                <div class="options-container">
+                    <div class="option-card" data-type="ilab" onclick="selectOption(this)">
+                        <span>We want to immerse participants in customer experiences and research findings</span>
+                        <span class="option-tag ilab-tag">iLab</span>
+                    </div>
+                    <div class="option-card" data-type="sprint" onclick="selectOption(this)">
+                        <span>We only need a quick introduction to key insights</span>
+                        <span class="option-tag sprint-tag">Sprint</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="question-section" id="q3">
+                <h2>5. Discovery Insights</h2>
+                <div class="options-container">
+                    <div class="option-card" data-type="ilab" onclick="selectOption(this)">
+                        <span>We are ready to organize and present a full discovery process</span>
+                        <span class="option-tag ilab-tag">iLab</span>
+                    </div>
+                    <div class="option-card" data-type="sprint" onclick="selectOption(this)">
+                        <span>We prefer to focus on one or two insights per session</span>
+                        <span class="option-tag sprint-tag">Sprint</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Question 6 -->
+            <div class="question-section" id="q4">
+                <h2>6. Ideation Process</h2>
+                <div class="options-container">
+                    <div class="option-card" data-type="ilab" onclick="selectOption(this)">
+                        <span>We want multiple rounds of ideation using different methods</span>
+                        <span class="option-tag ilab-tag">iLab</span>
+                    </div>
+                    <div class="option-card" data-type="sprint" onclick="selectOption(this)">
+                        <span>We want a single, focused ideation approach per session</span>
+                        <span class="option-tag sprint-tag">Sprint</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 7 -->
+            <div class="question-section" id="q4">
+                <h2>7. Facilitation Needs</h2>
+                <div class="options-container">
+                    <div class="option-card" data-type="ilab" onclick="selectOption(this)">
+                        <span>We need facilitators and scribes to document ideas</span>
+                        <span class="option-tag ilab-tag">iLab</span>
+                    </div>
+                    <div class="option-card" data-type="sprint" onclick="selectOption(this)">
+                        <span>Participants can document their own ideas</span>
+                        <span class="option-tag sprint-tag">Sprint</span>
+                    </div>
+                </div>
+            </div>            
+
+            <!-- Question 8 -->
+            <div class="question-section" id="q5">
+                <h2>8. Outcome</h2>
+                <div class="options-container">
+                    <div class="option-card" data-type="ilab" onclick="selectOption(this)">
+                        <span>We want to generate structured opportunity narratives for further development</span>
+                        <span class="option-tag ilab-tag">iLab</span>
+                    </div>
+                    <div class="option-card" data-type="sprint" onclick="selectOption(this)">
+                        <span>We need quick ideas to refine or prioritize immediately</span>
+                        <span class="option-tag sprint-tag">Sprint</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- Question 9 -->
+            <div class="question-section" id="q5">
+                <h2>9. Post-Session Work</h2>
+                <div class="options-container">
+                    <div class="option-card" data-type="ilab" onclick="selectOption(this)">
+                        <span>We want to run multiple rounds of idea selection and refinement</span>
+                        <span class="option-tag ilab-tag">iLab</span>
+                    </div>
+                    <div class="option-card" data-type="sprint" onclick="selectOption(this)">
+                        <span>We are okay with a simple poll to identify the best ideas</span>
+                        <span class="option-tag sprint-tag">Sprint</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-section" id="result-section">
+            <h2 class="result-title">Your Recommended Approach:</h2>
+            <p class="result-description" id="result-text">Based on your answers, we recommend:</p>
+            <button class="reset-btn" onclick="resetQuiz()">Start Over</button>
+        </div>
+    </div>
+
+    <script>
+        let ilabScore = 0;
+        let sprintScore = 0;
+        let selectedOptions = [];
+        const totalQuestions = 9;
+        
+        function selectOption(element) {
+            // Deselect any previously selected option in the same question section
+            const questionSection = element.closest('.question-section');
+            const options = questionSection.querySelectorAll('.option-card');
+            
+            options.forEach(option => {
+                option.classList.remove('selected');
+                option.classList.remove('sprint-selected');
+            });
+            
+            // Select the clicked option
+            if (element.dataset.type === 'ilab') {
+                element.classList.add('selected');
+            } else {
+                element.classList.add('sprint-selected');
+            }
+            
+            // Update the scores
+            updateScores();
+            
+            // Check if enough options have been selected
+            checkProgress();
+        }
+        
+        function updateScores() {
+            ilabScore = 0;
+            sprintScore = 0;
+            selectedOptions = [];
+            
+            document.querySelectorAll('.option-card.selected, .option-card.sprint-selected').forEach(option => {
+                selectedOptions.push(option);
+                
+                if (option.dataset.type === 'ilab') {
+                    ilabScore++;
+                } else {
+                    sprintScore++;
+                }
+            });
+            
+            document.getElementById('ilab-score').textContent = ilabScore;
+            document.getElementById('sprint-score').textContent = sprintScore;
+            
+            const progress = (selectedOptions.length / totalQuestions) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            
+            // Update winner badges
+            updateWinnerBadges();
+        }
+        
+        function updateWinnerBadges() {
+            const ilabBadge = document.getElementById('ilab-winner');
+            const sprintBadge = document.getElementById('sprint-winner');
+            
+            if (ilabScore > sprintScore) {
+                ilabBadge.style.display = 'block';
+                sprintBadge.style.display = 'none';
+            } else if (sprintScore > ilabScore) {
+                sprintBadge.style.display = 'block';
+                ilabBadge.style.display = 'none';
+            } else {
+                // Equal scores or no selections yet
+                ilabBadge.style.display = 'none';
+                sprintBadge.style.display = 'none';
+            }
+        }
+        
+        function checkProgress() {
+            if (selectedOptions.length >= totalQuestions) {
+                showResults();
+            }
+        }
+        
+        function showResults() {
+            const resultSection = document.getElementById('result-section');
+            const resultText = document.getElementById('result-text');
+            
+            resultSection.style.display = 'block';
+            
+            let approach = '';
+            let description = '';
+            
+            if (ilabScore > sprintScore) {
+                approach = '<span class="recommendation-highlight ilab-highlight">iLab</span>';
+                description = 'The iLab approach is ideal for your situation as you prefer a more comprehensive, immersive ideation process with larger teams and deeper preparation. This approach allows for multiple rounds of ideation and structured outputs.';
+            } else if (sprintScore > ilabScore) {
+                approach = '<span class="recommendation-highlight sprint-highlight">Ideation Sprint</span>';
+                description = 'The Ideation Sprint approach suits your needs as you prefer a quick, focused session with a smaller team and targeted insights. This approach is efficient for generating ideas that can be immediately refined or prioritized.';
+            } else {
+                approach = 'Either approach could work';
+                description = 'Based on your responses, either an iLab or Ideation Sprint could work for your situation. Consider your most critical constraints (time, team size, or outcome needs) to make the final decision.';
+            }
+            
+            resultText.innerHTML = `Based on your answers, we recommend: ${approach}<br><br>${description}`;
+            
+            // Scroll to results
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function resetQuiz() {
+            // Reset scores
+            ilabScore = 0;
+            sprintScore = 0;
+            selectedOptions = [];
+            
+            // Update displays
+            document.getElementById('ilab-score').textContent = '0';
+            document.getElementById('sprint-score').textContent = '0';
+            document.getElementById('progress-bar').style.width = '0%';
+            
+            // Clear selections
+            document.querySelectorAll('.option-card').forEach(option => {
+                option.classList.remove('selected');
+                option.classList.remove('sprint-selected');
+            });
+            
+            // Hide results
+            document.getElementById('result-section').style.display = 'none';
+            
+            // Hide winner badges
+            document.getElementById('ilab-winner').style.display = 'none';
+            document.getElementById('sprint-winner').style.display = 'none';
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
